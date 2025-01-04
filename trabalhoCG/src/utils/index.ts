@@ -11,15 +11,47 @@ export interface espaco3D extends plano2D{
 }
 
 export interface RGB {
-    r: number;
-    g: number;
-    b: number;
+    R: number;
+    G: number;
+    B: number;
 }
 
 export function isValidRGB(color: RGB): boolean {
     return (
-        color.r >= 0 && color.r <= 255 &&
-        color.g >= 0 && color.g <= 255 &&
-        color.b >= 0 && color.b <= 255
+        color.R >= 0 && color.R <= 255 &&
+        color.G >= 0 && color.G <= 255 &&
+        color.B >= 0 && color.B <= 255
     );
+}
+
+export function isValidScreenSize(size: number, windowSize:number): boolean {
+    //Ver se o tamanho é maior que 0 e se não é maior que 70% da tela
+    return size > 0 && size < 0.7 * windowSize;
+}
+
+export function multiplyMatrices(matrixA: number[][], matrixB: number[][]): number[][] | null {
+    const rowsA = matrixA.length;
+    const colsA = matrixA[0].length;
+    const rowsB = matrixB.length;
+    const colsB = matrixB[0].length;
+
+    // Verifica se as dimensões são compatíveis para multiplicação
+    if (colsA !== rowsB) {
+        console.error("Matrizes incompatíveis para multiplicação.");
+        return null;
+    }
+
+    // Cria a matriz resultante com valores inicializados como 0
+    const result: number[][] = Array.from({ length: rowsA }, () => Array(colsB).fill(0));
+
+    // Multiplica as matrizes
+    for (let i = 0; i < rowsA; i++) {
+        for (let j = 0; j < colsB; j++) {
+            for (let k = 0; k < colsA; k++) {
+                result[i][j] += matrixA[i][k] * matrixB[k][j];
+            }
+        }
+    }
+
+    return result;
 }

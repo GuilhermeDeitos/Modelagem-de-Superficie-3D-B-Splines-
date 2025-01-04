@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+.sidebar{
+    width: 100%;
+    padding: 1rem;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    font-family: 'Poppins', sans-serif;
+    background: rgba( 255, 255, 255, 0.25 );
+    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    border: 1px solid rgba( 255, 255, 255, 0.18 );
+}
+
+.sidebar span span{
+    display: flex;
+    gap: .3rem;
+}
+
+.form-input{
+    border-radius: .3rem;
+    padding: .3rem .3rem;
+    font-size: .8rem;
+    width: 3rem;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.form-input[name="pontosDeControle"]{
+    width: 3rem;
+}
+
+.btn{
+    padding: .3rem .5rem;
+    border-radius: .3rem;
+    background-color: #007bff;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    border: 1px solid #007bff;
+    transition: ease-in .3s;
+}
+
+.btn:hover{
+    background-color: #0056b3;
+}
+
+.btn-info{
+    top:0;
+    right:0;
+    position: absolute;
+    padding: .3rem .5rem;
+    margin: .5rem;
+
+    
+}
+
+.form-select{
+    border-radius: .3rem;
+    padding: .3rem .3rem;
+    font-size: .8rem;
+    width: 7rem;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}

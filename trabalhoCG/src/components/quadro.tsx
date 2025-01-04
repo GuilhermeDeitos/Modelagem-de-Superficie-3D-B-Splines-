@@ -50,12 +50,14 @@ export function Quadro() {
             Y: 0,
             Z: 0
         },
-        escala: 1 // Valor padrão
+        escala: 1, // Valor padrão
+        pontosDeControle:1
+    
     });
     return (
         <div id="quadro">
             <div>
-                <h1 style={{ color: "blue" }}> Modelagem de Superfície 3D (B-Splines)</h1>
+                <h1> Modelagem de Superfície 3D (B-Splines)</h1>
                 <canvas id="tela" width={propriedades.tela.X} height={propriedades.tela.Y} style={{ border: "1px solid #000" }}></canvas>
             </div>
             <aside>
@@ -72,6 +74,7 @@ export function Quadro() {
                     rotacao={propriedades.rotacao}
                     translacao={propriedades.translacao}
                     escala={propriedades.escala}
+                    pontosDeControle={propriedades.pontosDeControle}
                 />
             </aside>
         </div>

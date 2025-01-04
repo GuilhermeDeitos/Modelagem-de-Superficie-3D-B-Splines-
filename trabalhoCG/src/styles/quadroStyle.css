@@ -1,9 +1,14 @@
 #quadro{
     display: flex;
     flex-direction: row;
+    height: 100vh;
+    gap: 5rem;
+    justify-content: center;
+    align-items: center;
+    
 }
 
-form{
-    display: flex;
-    flex-direction: column;
+#tela{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
 }
