@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from "react";
+import { useState } from "react";
 import {
   plano2D,
   espaco3D,
@@ -8,6 +8,7 @@ import {
 } from "../utils";
 import Swal from "sweetalert2";
 import "../styles/sidebar.css";
+import { SruToSrt } from "../algoritmos/sruTosrt";
 
 export interface Propriedades {
   tela: plano2D;
@@ -29,6 +30,16 @@ interface SidebarPropriedades extends Propriedades {
 }
 
 export function Sidebar(props: SidebarPropriedades) {
+
+  //A fins de teste
+  const pontos = [
+    [21.2, 34.1, 18.8, 5.9, 20.0],  // Coordenadas X
+    [0.7, 3.4, 5.6, 2.9, 20.9],    // Coordenadas Y
+    [42.3, 27.2, 14.6, 29.7, 31.6], // Coordenadas Z
+    [1, 1, 1, 1, 1]                // Homogêneo
+];
+
+
   const [localProprieties, setLocalProprieties] = useState<Propriedades>(props);
 
   function onChangeProps(e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) {
@@ -91,11 +102,15 @@ export function Sidebar(props: SidebarPropriedades) {
       return;
     }
     props.setPropriedades(localProprieties);
+    const converter = new SruToSrt(localProprieties.camera, localProprieties.pontoFocal, pontos, localProprieties.viewport, localProprieties.tela);
+    converter.transformarPontos();
     Swal.fire({
         title: "Sucesso",
         text: "Propriedades alteradas com sucesso",
         icon: "success"
     });
+
+    
   }
 
   function onClickInfo(e: React.MouseEvent<HTMLButtonElement>){
@@ -361,7 +376,7 @@ export function Sidebar(props: SidebarPropriedades) {
         Aplicar alterações
       </button>
 
-      <button className="btn btn-info">&#9432;</button>
+      <button className="btn btn-info" onClick={onClickInfo}>&#9432;</button>
     </form>
   );
 }
