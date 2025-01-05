@@ -16,7 +16,12 @@ export class SruToSrt{
     private viewport: viewport;
     private window: window;
     constructor(VRP: espaco3D, pontoFocal: espaco3D, pontos: number[][], viewport: plano2D, windowSize: plano2D){
-        this.pontos = pontos;
+        this.pontos = pontos.map(ponto => {
+            if (ponto.length === 3) {
+                ponto.push(1);
+            }
+            return ponto;
+        });
         this.VRP = [VRP.X, VRP.Y, VRP.Z];
         this.pontoFocal = [pontoFocal.X, pontoFocal.Y, pontoFocal.Z];
         this.viewport = {
@@ -42,8 +47,8 @@ export class SruToSrt{
     // Projeção axonométrica isométrica
     private projecaoAxonometricaIsometrica(): number[][]{
         return [
-            [Math.sqrt(3) / 3, 0, -Math.sqrt(3) / 3, 0], // Transformação X'
-            [1 / 3, 2 / 3, 1 / 3, 0],    // Transformação Y'
+            [1 , 0, -1, 0], // Transformação X'
+            [0, 1, -1, 0],    // Transformação Y'
             [0, 0, 0, 0],                 // Projeção ortogonal no plano
             [0, 0, 0, 1]                  // Homogeneidade
         ];
@@ -72,10 +77,13 @@ export class SruToSrt{
         const matrizProjecao = this.projecaoAxonometricaIsometrica();
         const matrizJanela = this.transformacaoJanela();
         const matrizProjecaoCamera = MatrixUtils.multiplyMatrix(matrizProjecao, matrizCamera);
+
         if (matrizProjecaoCamera === null) {
             throw new Error("Multiplicação de matriz falhou para matriz de projecao e camera");
         }
         const matrizFinal = MatrixUtils.multiplyMatrix(matrizJanela, matrizProjecaoCamera);
+        console.log(matrizFinal);
+
         if (matrizFinal === null) {
             throw new Error("Multiplicação de matriz falhou para matriz de janela e matriz de projecao e camera");
         }
@@ -83,19 +91,21 @@ export class SruToSrt{
     }
 
     // Função para realizar a transformação de todos os pontos
-    public transformarPontos(): void {
-        //verificar se já é homogeneo
-        this.pontos = this.pontos.map(ponto => {
-            if (ponto.length === 3) {
-                ponto.push(1);
-            }
-            return ponto;
-        });
-        console.log(this.pontos)
-   
+    public transformarPontos(): number[][] | null{
         const matrizFinal = this.pipeline();
+        this.pontos = MatrixUtils.transposeMatrix(this.pontos);
+        this.pontos = MatrixUtils.multiplyMatrix(matrizFinal, this.pontos) || [];
+        this.pontos = MatrixUtils.transposeMatrix(this.pontos);
+        console.log(matrizFinal);
+        console.log(this.pontos);
+        //Normalizar com o fator homogeneo
         
-        console.log(MatrixUtils.multiplyMatrix(matrizFinal, this.pontos))
+
+        
+        console.log(this.pontos);
+        return this.pontos;
+
+        
         
     }
 }

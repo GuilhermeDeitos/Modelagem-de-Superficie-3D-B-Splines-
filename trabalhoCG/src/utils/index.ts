@@ -275,6 +275,16 @@ export class Canvas{
         this.ctx = context;
 
     }
+
+    getWidth(): number {
+        return this.canvas.width;
+    }
+
+    getHeight(): number {
+        return this.canvas.height;
+    }
+
+
     
     drawLine(ponto1:Ponto,ponto2:Ponto): void {
         this.ctx.beginPath();
@@ -283,6 +293,8 @@ export class Canvas{
         this.ctx.strokeStyle = getRGBString(ponto1.cor);
         this.ctx.stroke();
     }
+
+    
 
     drawPoint(ponto:Ponto): void {
         this.ctx.beginPath();

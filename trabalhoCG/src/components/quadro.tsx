@@ -33,7 +33,7 @@ export function Quadro() {
             Z: 0
         },
         pontoFocal: {
-            X: 0,
+            X: 1,
             Y: 0,
             Z: 0
         },
@@ -64,7 +64,9 @@ export function Quadro() {
             Z: 0
         },
         escala: 1, // Valor padrão
-        pontosDeControle:1
+        pontosDeControle:{X:4, Y:4},
+        grauCurva: 90,
+        resolucaoCurva: {X: 100, Y: 100}
     
     });
 
@@ -74,48 +76,11 @@ export function Quadro() {
     const [idPoligonos, setIdPoligonos] = useState(0);
 
     function onClickCanvas(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
-        const rect = event.currentTarget.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        const ponto = new Ponto(x, y, 0);
-    
-        if (canvas) {
-            // Desenhar o ponto clicado
-            canvas.drawPoint(ponto);
-    
-            // Atualizar arestas
-            if (arestas.length > 0) {
-                const ultimoPonto = arestas[arestas.length - 1].pontoFim;
-                const novaAresta = new Aresta(ultimoPonto, ponto, idArestas);
-                setArestas([...arestas, novaAresta]);
-                canvas.drawLine(ultimoPonto, ponto); // Desenhar aresta
-            } else {
-                const novaAresta = new Aresta(ponto, ponto, idArestas);
-                setArestas([...arestas, novaAresta]);
-            }
-    
-            setIdArestas(idArestas + 1);
-        }
+        
     }
 
     function fecharPoligono() {
-        if (arestas.length > 1 && canvas) {
-            const primeiroPonto = arestas[0].pontoInicio;
-            const ultimoPonto = arestas[arestas.length - 1].pontoFim;
-    
-            // Desenhar a última aresta para fechar o polígono
-            canvas.drawLine(ultimoPonto, primeiroPonto);
-    
-            // Criar polígono
-            const poligono = new Poligono(arestas, idPoligonos);
-            setPoligonos([...poligonos, poligono]);
-
-            // Limpar arestas
-            setArestas([]);
-            setIdArestas(0);
-            setIdPoligonos(idPoligonos + 1);
-
-        }
+        
     }
 
     function limparPoligonos() {
@@ -153,12 +118,12 @@ export function Quadro() {
                     translacao={propriedades.translacao}
                     escala={propriedades.escala}
                     pontosDeControle={propriedades.pontosDeControle}
+                    canva={canvas}
+                    grauCurva={propriedades.grauCurva}
+                    resolucaoCurva={propriedades.resolucaoCurva}
                 />
             </aside>
-            <div>
-                <button onClick={fecharPoligono}>Fechar Poligono</button>
-                <button onClick={limparPoligonos}>LimparPoligonos</button>
-            </div>
+            
             
         </div>
     )

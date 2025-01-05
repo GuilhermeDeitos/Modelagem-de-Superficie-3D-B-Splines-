@@ -5,10 +5,12 @@ import {
   RGB,
   isValidRGB,
   isValidScreenSize,
+  Canvas,
 } from "../utils";
 import Swal from "sweetalert2";
 import "../styles/sidebar.css";
 import { SruToSrt } from "../algoritmos/sruTosrt";
+import { CurvaSpline, SuperficieSpline } from "../algoritmos/spline";
 
 export interface Propriedades {
   tela: plano2D;
@@ -22,11 +24,14 @@ export interface Propriedades {
   rotacao?: espaco3D;
   translacao?: espaco3D;
   escala?: number;
-  pontosDeControle: number;
+  pontosDeControle: plano2D;
+  grauCurva: number;
+  resolucaoCurva: plano2D;
 }
 
 interface SidebarPropriedades extends Propriedades {
   setPropriedades: React.Dispatch<React.SetStateAction<Propriedades>>;
+  canva: Canvas | null;
 }
 
 export function Sidebar(props: SidebarPropriedades) {
@@ -57,7 +62,16 @@ export function Sidebar(props: SidebarPropriedades) {
 
     const [mainProp, subProp] = e.target.name.split(" ");
     const value = parseInt(e.target.value) || 0;
-    console.log(mainProp, subProp, value);
+    //Caso não tenha subProp
+    if(subProp === undefined) {
+        setLocalProprieties((prev) => {
+            return {
+            ...prev,
+            [mainProp]: value,
+            };
+        });
+        return;
+    }      
 
     setLocalProprieties((prev) => {
       const updatedProp = {
@@ -102,8 +116,11 @@ export function Sidebar(props: SidebarPropriedades) {
       return;
     }
     props.setPropriedades(localProprieties);
-    const converter = new SruToSrt(localProprieties.camera, localProprieties.pontoFocal, pontos, localProprieties.viewport, localProprieties.tela);
-    converter.transformarPontos();
+    const surperficie = new SuperficieSpline(props.pontosDeControle, props.canva, props.camera, props.pontoFocal, props.viewport, props.tela, props.resolucaoCurva)
+    surperficie.executar();
+    const curvas = new CurvaSpline(props.pontosDeControle.Y, 90, 1, props.canva);
+    curvas.executar();
+
     Swal.fire({
         title: "Sucesso",
         text: "Propriedades alteradas com sucesso",
@@ -332,6 +349,51 @@ export function Sidebar(props: SidebarPropriedades) {
           ></input>
         </span>
       </span>
+        <span style={{
+            display: "flex",
+            justifyContent: "space-between",
+        }}>
+          <span style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}>
+          <label>Grau da curva</label>
+          <span>
+              <input
+                className="form-input"
+                onChange={onChangeProps}
+                name="grauCurva"
+                placeholder="0º"
+                value={localProprieties.grauCurva}
+              ></input>
+          </span>
+          </span>
+          <span style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}>
+          <label>Resolução da curva</label>
+          <span>
+              <input
+                className="form-input"
+                onChange={onChangeProps}
+                name="resolucaoCurva X"
+                placeholder="X"
+                value={localProprieties.resolucaoCurva.X}
+              ></input>
+              <input
+                className="form-input"
+                onChange={onChangeProps}
+                name="resolucaoCurva Y"
+                placeholder="Y"
+                value={localProprieties.resolucaoCurva.Y}
+              ></input>
+            </span>
+          </span>
+          
+      </span>
       <span style={{
             display: "flex",
             flexDirection: "column",
@@ -360,13 +422,22 @@ export function Sidebar(props: SidebarPropriedades) {
             placeholder="Escala"
             value={localProprieties.escala}
           ></input>
+          <span>
           <input
                     className="form-input"
                     onChange={onChangeProps}
-                    name="pontosDeControle"
+                    name="pontosDeControle X"
                     placeholder="Pontos de controle"
-                    value={localProprieties.pontosDeControle}
+                    value={localProprieties.pontosDeControle.X}
                 ></input>
+                <input
+                    className="form-input"
+                    onChange={onChangeProps}
+                    name="pontosDeControle Y"
+                    placeholder="Pontos de controle"
+                    value={localProprieties.pontosDeControle.Y}
+                    />
+          </span>
         </span>
             
       

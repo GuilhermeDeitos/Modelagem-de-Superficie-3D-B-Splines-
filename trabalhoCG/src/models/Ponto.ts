@@ -10,7 +10,7 @@ export class Ponto implements espaco3D{
         this.X = X;
         this.Y = Y;
         this.Z = Z;
-        this.cor = cor || {R: 0, G: 0, B: 0};
+        this.cor = cor || {R: 0, G: 255, B: 0};
     }
     //Método para realizar a translação de um ponto
     public translate(x:number, y:number, z:number): boolean {

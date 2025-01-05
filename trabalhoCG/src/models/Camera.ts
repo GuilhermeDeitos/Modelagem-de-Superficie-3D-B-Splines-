@@ -15,7 +15,6 @@ export class Camera{
         const Y = [0,1,0];
         this.VRP = VRP;
         this.pontoFocal = pontoFocal;
-
         this.vectorN = this.calculateVectorN();
         if(this.vectorN===null)
             return;
