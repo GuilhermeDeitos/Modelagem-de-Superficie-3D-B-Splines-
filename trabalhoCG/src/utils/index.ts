@@ -123,6 +123,11 @@ export class MatrixUtils {
 
         return result;
     }
+
+    //converter ponto para matriz
+    static pointToMatrix(point: Ponto): number[] {
+        return [point.X, point.Y, point.Z, 1];
+    }
 }
 
 export class GeometricTransformations{
@@ -314,4 +319,15 @@ export class Canvas{
     getContext(){
         return this.ctx;
     }
+}
+
+
+export function randomizarSuperficie(X: number, Y: number): Ponto[][] {
+    const pontosControle: Ponto[][] = Array.from({ length: X + 1 }, () => Array(Y + 1));
+    for (let i = 0; i <= X; i++) {
+        for (let j = 0; j <= Y; j++) {
+            pontosControle[i][j] = new Ponto(i, j, Math.random() * 2 - 1);
+        }
+    }
+    return pontosControle;
 }

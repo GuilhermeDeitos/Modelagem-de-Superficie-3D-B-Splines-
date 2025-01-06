@@ -6,11 +6,15 @@ import {
   isValidRGB,
   isValidScreenSize,
   Canvas,
+  GeometricTransformations,
+  MatrixUtils,
+  randomizarSuperficie
 } from "../utils";
 import Swal from "sweetalert2";
 import "../styles/sidebar.css";
 import { SruToSrt } from "../algoritmos/sruTosrt";
 import { CurvaSpline, SuperficieSpline } from "../algoritmos/spline";
+import { Ponto } from "../models/Ponto";
 
 export interface Propriedades {
   tela: plano2D;
@@ -37,12 +41,7 @@ interface SidebarPropriedades extends Propriedades {
 export function Sidebar(props: SidebarPropriedades) {
 
   //A fins de teste
-  const pontos = [
-    [21.2, 34.1, 18.8, 5.9, 20.0],  // Coordenadas X
-    [0.7, 3.4, 5.6, 2.9, 20.9],    // Coordenadas Y
-    [42.3, 27.2, 14.6, 29.7, 31.6], // Coordenadas Z
-    [1, 1, 1, 1, 1]                // Homogêneo
-];
+  const [pontos, setPontos] = useState<Ponto[][] | null>(null);
 
 
   const [localProprieties, setLocalProprieties] = useState<Propriedades>(props);
@@ -115,6 +114,32 @@ export function Sidebar(props: SidebarPropriedades) {
         });
       return;
     }
+
+    const matEscala = GeometricTransformations.scaleMatrix3D(props.escala ?? 1);
+    const matTranslacao = GeometricTransformations.translationMatrix3D(props.translacao?.X ?? 0, props.translacao?.Y ?? 0,
+    props.translacao?.Z ?? 0);
+    const matTransformacao = MatrixUtils.multiplyMatrix(matEscala, matTranslacao);
+    setPontos(randomizarSuperficie(props.pontosDeControle.X, props.pontosDeControle.Y))
+    console.log(pontos)
+    if(matTransformacao === null){
+        Swal.fire({
+            title: "Erro",
+            text: "Erro ao multiplicar matrizes",
+            icon: "error"
+        });
+        return;
+    }
+    //Converter ponto pra matriz
+    const pontosMatriz = pontos?.map((linha) => {
+        return linha.map((ponto) => {
+            return MatrixUtils.pointToMatrix(ponto);
+        });
+    });
+
+    console.log(pontosMatriz);
+
+    //Multiplicar os pontos pela matriz de transformação
+    const pontosTransformados = MatrixUtils.multiplyMatrix(matTransformacao, pontosMatriz);
     props.setPropriedades(localProprieties);
     const surperficie = new SuperficieSpline(props.pontosDeControle, props.canva, props.camera, props.pontoFocal, props.viewport, props.tela, props.resolucaoCurva)
     surperficie.executar();

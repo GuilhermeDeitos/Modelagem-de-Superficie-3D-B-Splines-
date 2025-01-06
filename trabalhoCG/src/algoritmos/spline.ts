@@ -48,13 +48,7 @@ export class SuperficieSpline {
         
     }
 
-    private randomizarSuperficie() {
-        for (let i = 0; i <= this.NX; i++) {
-            for (let j = 0; j <= this.NY; j++) {
-                this.pontosControle[i][j] = new Ponto(i, j, Math.random() * 2 - 1);
-            }
-        }
-    }
+    
 
     private calcularNos(nos: number[], n: number, t: number) {
         for (let i = 0; i < n + t + 1; i++) {
@@ -146,6 +140,7 @@ export class SuperficieSpline {
         const pontosSRTMatriz2D = Array.from({ length: this.RESOLUCAOI }, () =>
             Array.from({ length: this.RESOLUCAOJ }, () => new Ponto(0, 0, 0))
         );
+       
 
         let index = 0;
         for (let i = 0; i < this.RESOLUCAOI; i++) {
@@ -155,12 +150,39 @@ export class SuperficieSpline {
             }
         }
 
-        
+         //Normalizar os pontos
+         pontosSRTMatriz2D.forEach((linha) => {
+            linha.forEach((ponto) => {
+                ponto.X = (ponto.X + 1) + canvas.width/4; // Normalizando para o canvas
+                ponto.Y = (ponto.Y + 1) + canvas.height/4; // Normalizando para o canvas
+                ponto.Z = ponto.Z + 1;
+            })
+        });
         
 
         console.log("Pontos da Superfície Spline:", pontosSRTMatriz2D);
         // Desenhar pontos a partir de pontos numeros
-        
+        for (let i = 0; i < this.RESOLUCAOI; i++) {
+            for (let j = 0; j < this.RESOLUCAOJ; j++) {
+                this.canva?.drawPoint(pontosSRTMatriz2D[i][j]);
+            }
+        }
+
+        // Desenhar linhas entre os pontos
+
+        for (let i = 0; i < this.RESOLUCAOI; i++) {
+            for (let j = 0; j < this.RESOLUCAOJ - 1; j++) {
+                this.canva?.drawLine(pontosSRTMatriz2D[i][j], pontosSRTMatriz2D[i][j + 1]);
+            }
+        }
+
+        for (let j = 0; j < this.RESOLUCAOJ; j++) {
+            for (let i = 0; i < this.RESOLUCAOI - 1; i++) {
+                this.canva?.drawLine(pontosSRTMatriz2D[i][j], pontosSRTMatriz2D[i + 1][j]);
+            }
+        }
+
+
 
       
 

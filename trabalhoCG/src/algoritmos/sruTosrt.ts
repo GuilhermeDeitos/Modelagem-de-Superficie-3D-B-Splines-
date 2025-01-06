@@ -64,7 +64,7 @@ export class SruToSrt{
         const deltaY = this.window.ymax - this.window.ymin;
         return [
             [deltaU / deltaX, 0, 0, -this.window.xmin * deltaU / deltaX + this.viewport.umin],
-            [0, invertedDeltaV / deltaY, 0, -this.window.ymin * deltaV / deltaY + this.viewport.vmax],
+            [0, invertedDeltaV / deltaY, 0, -this.window.ymin * deltaV / deltaY + this.viewport.vmin],
             [0, 0, 1, 0],
             [0, 0, 0, 1]
         ]
