@@ -24,13 +24,13 @@ export class SuperficieSpline {
         pontoFocal: espaco3D, 
         viewport: plano2D,
         tela: plano2D,
-        resolução:plano2D
+        resolucao:plano2D
     ) {
         this.NX = pontosControle.X;
         this.NY = pontosControle.Y;
         this.canva = canva;
-        this.RESOLUCAOI = resolução.X;
-        this.RESOLUCAOJ = resolução.Y;
+        this.RESOLUCAOI = resolucao.X;
+        this.RESOLUCAOJ = resolucao.Y;
         this.pontosControle = Array.from({ length: this.NX + 1 }, () =>
             Array.from({ length: this.NY + 1 }, () => new Ponto(0, 0, 0))
         );
@@ -115,22 +115,13 @@ export class SuperficieSpline {
         // Limpar o canvas
         this.canva?.clearCanvas();
         
-        // Normalizar os pontos
-        // const pontosNormalizados = this.pontosGerados.map((linha) =>
-        //     linha.map((ponto) => ( new Ponto(
-        //         (ponto.X + 1) * canvas.width/2, // Normalizando para o canvas
-        //         (ponto.Y + 1) * canvas.height/2, // Normalizando para o canvas
-        //         ponto.Z + 1,
-        //     ))
-        //     //transladar os pontos para a origem do canvas
-            
-        // )
-        // );
+        //Normalizar os pontos
+        console.log(this.pontosGerados)
+        
 
         // converter pontos para matriz de numeros
         const pontosNumeros = this.pontosGerados.map(linha => linha.map(ponto => [ponto.X, ponto.Y, ponto.Z]));
         
-        console.log(pontosNumeros);
 
         const pontosNumerosFlattened = pontosNumeros.flat();
         const sruToSrt = new SruToSrt(this.VRP, this.pontoFocal, pontosNumerosFlattened, this.viewport, this.window);
@@ -139,7 +130,6 @@ export class SuperficieSpline {
             throw new Error("Falha ao transformar pontos para SRT");
         }
 
-        console.log(pontosSRT);
 
         // converter pontos para matriz de pontos
         const pontosSRTMatriz = pontosSRT.map((ponto) => new Ponto(ponto[0], ponto[1], ponto[2]));
@@ -160,22 +150,47 @@ export class SuperficieSpline {
 
         console.log("Pontos da Superfície Spline:", pontosSRTMatriz2D);
         // Desenhar pontos a partir de pontos numeros
+        for (let i = 0; i < this.RESOLUCAOI; i++) {
+            for (let j = 0; j < this.RESOLUCAOJ; j++) {
+                this.canva?.drawPoint(pontosSRTMatriz2D[i][j]);
+            }
+        }
+
+        // Desenhar linhas entre os pontos
+        for (let i = 0; i < this.RESOLUCAOI; i++) {
+            for (let j = 0; j < this.RESOLUCAOJ - 1; j++) {
+                this.canva?.drawLine(pontosSRTMatriz2D[i][j], pontosSRTMatriz2D[i][j + 1]);
+            }
+        }
+
+
+        for (let j = 0; j < this.RESOLUCAOJ; j++) {
+            for (let i = 0; i < this.RESOLUCAOI - 1; i++) {
+                this.canva?.drawLine(pontosSRTMatriz2D[i][j], pontosSRTMatriz2D[i + 1][j]);
+            }
+        }
         
-
-      
-
-
-        
-
-        // Exibir os pontos normalizados no console
-
-
-        
-
-        
-
-        
-
+      }
+    
+      public getPontos(): Ponto[][] {
+        return this.pontosGerados;
+      }
+    
+      //Operações sobre os pontos da superficie
+      public pointsOperations(scale:number,translate:espaco3D, rotate:espaco3D): void {
+        const pontos = this.getPontos();
+        const pontosOperados = pontos.map((linha) =>
+          linha.map((ponto) => {
+            ponto.scale(scale);
+            ponto.translate(translate.X, translate.Y, translate.Z);
+            ponto.rotate(rotate.X, "x");
+            ponto.rotate(rotate.Y, "y");
+            ponto.rotate(rotate.Z, "z");
+            return ponto;
+          })
+        );
+        this.pontosGerados = pontosOperados;
+        this.exibirSuperficie();
       }
 
     public executar() {
@@ -320,10 +335,6 @@ export class CurvaSpline {
         this.pontosGerados.forEach(ponto => {
             this.canva?.drawPoint(ponto);
         });
-
-              
-        
-
         
     }
 

@@ -64,7 +64,7 @@ export class SruToSrt{
         const deltaY = this.window.ymax - this.window.ymin;
         return [
             [deltaU / deltaX, 0, 0, -this.window.xmin * deltaU / deltaX + this.viewport.umin],
-            [0, invertedDeltaV / deltaY, 0, -this.window.ymin * deltaV / deltaY + this.viewport.vmax],
+            [0, invertedDeltaV / deltaY, 0, -this.window.ymin * deltaV / deltaY + this.viewport.vmin],
             [0, 0, 1, 0],
             [0, 0, 0, 1]
         ]
@@ -77,6 +77,7 @@ export class SruToSrt{
         const matrizProjecao = this.projecaoAxonometricaIsometrica();
         const matrizJanela = this.transformacaoJanela();
         const matrizProjecaoCamera = MatrixUtils.multiplyMatrix(matrizProjecao, matrizCamera);
+        console.log(matrizCamera);
 
         if (matrizProjecaoCamera === null) {
             throw new Error("Multiplicação de matriz falhou para matriz de projecao e camera");

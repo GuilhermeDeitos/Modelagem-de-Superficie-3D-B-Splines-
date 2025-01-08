@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 import "../styles/sidebar.css";
 import { SruToSrt } from "../algoritmos/sruTosrt";
 import { CurvaSpline, SuperficieSpline } from "../algoritmos/spline";
+import { Ponto } from "../models/Ponto";
 
 export interface Propriedades {
   tela: plano2D;
@@ -26,7 +27,8 @@ export interface Propriedades {
   escala?: number;
   pontosDeControle: plano2D;
   grauCurva: number;
-  resolucaoCurva: plano2D;
+  resolucaoCurva: number;
+  resolucaoSuperficie:plano2D;
 }
 
 interface SidebarPropriedades extends Propriedades {
@@ -36,16 +38,11 @@ interface SidebarPropriedades extends Propriedades {
 
 export function Sidebar(props: SidebarPropriedades) {
 
-  //A fins de teste
-  const pontos = [
-    [21.2, 34.1, 18.8, 5.9, 20.0],  // Coordenadas X
-    [0.7, 3.4, 5.6, 2.9, 20.9],    // Coordenadas Y
-    [42.3, 27.2, 14.6, 29.7, 31.6], // Coordenadas Z
-    [1, 1, 1, 1, 1]                // Homogêneo
-];
-
-
+  const [pontos, setPontos] = useState<Ponto[][]>([]);
   const [localProprieties, setLocalProprieties] = useState<Propriedades>(props);
+  const [superficie, setSuperficie] = useState<SuperficieSpline | null>(null);
+  const [curvas, setCurvas] = useState<CurvaSpline| null>(null);
+
 
   function onChangeProps(e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) {
     if (e.target instanceof HTMLSelectElement){
@@ -86,8 +83,7 @@ export function Sidebar(props: SidebarPropriedades) {
 
   }
 
-  function onClick(e: React.MouseEvent<HTMLButtonElement>) {
-    e.preventDefault();
+  function validations(){
     if (
       !isValidScreenSize(localProprieties.tela.X, window.innerWidth) ||
       !isValidScreenSize(localProprieties.tela.Y, window.innerHeight)
@@ -97,7 +93,7 @@ export function Sidebar(props: SidebarPropriedades) {
             text: "Tamanho da tela inválido",
             icon: "error"
         });
-      return;
+      return false
     }
     if (!isValidRGB(localProprieties.iluminacaoAmbiente)) {
         Swal.fire({
@@ -105,7 +101,7 @@ export function Sidebar(props: SidebarPropriedades) {
             text: "Cor da iluminação ambiente inválida",
             icon: "error"
         });
-      return;
+      return false
     }
     if (!isValidRGB(localProprieties.intensidadeIluminacaoAmbiente)) {
         Swal.fire({
@@ -113,12 +109,47 @@ export function Sidebar(props: SidebarPropriedades) {
             text: "Intensidade da iluminação ambiente inválida",
             icon: "error"
         });
-      return;
+      return false
     }
+  if(localProprieties.pontosDeControle.X < 4 || localProprieties.pontosDeControle.Y < 4 || localProprieties.pontosDeControle.X > 100 || localProprieties.pontosDeControle.Y > 100){
+        Swal.fire({
+            title: "Erro",
+            text: "Número de pontos de controle inválido",
+            icon: "error"
+        });
+      return false
+    }
+    if(localProprieties.grauCurva < 0 || localProprieties.grauCurva > 360){
+        Swal.fire({
+            title: "Erro",
+            text: "Grau da curva inválido",
+            icon: "error"
+        });
+      return false
+    }
+    if(localProprieties.resolucaoSuperficie.X < 0 || localProprieties.resolucaoSuperficie.Y < 0){
+        Swal.fire({
+            title: "Erro",
+            text: "Resolução da curva inválida",
+            icon: "error"
+        });
+      return false
+    }
+    return true
+  }
+
+  function onClick(e: React.MouseEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    if (!validations()) 
+      return;
     props.setPropriedades(localProprieties);
-    const surperficie = new SuperficieSpline(props.pontosDeControle, props.canva, props.camera, props.pontoFocal, props.viewport, props.tela, props.resolucaoCurva)
-    surperficie.executar();
-    const curvas = new CurvaSpline(props.pontosDeControle.Y, 90, 1, props.canva);
+    setSuperficie(new SuperficieSpline(localProprieties.pontosDeControle, props.canva, localProprieties.camera, localProprieties.pontoFocal, localProprieties.viewport, localProprieties.tela, localProprieties.resolucaoSuperficie))
+    if (superficie) {
+      superficie.executar();
+      setPontos(superficie.getPontos());
+
+    }
+    const curvas = new CurvaSpline(localProprieties.pontosDeControle.Y*localProprieties.pontosDeControle.X, localProprieties.grauCurva, localProprieties.resolucaoCurva, props.canva);
     curvas.executar();
 
     Swal.fire({
@@ -126,7 +157,13 @@ export function Sidebar(props: SidebarPropriedades) {
         text: "Propriedades alteradas com sucesso",
         icon: "success"
     });
+  }
 
+  function onClickAlterations(event: React.MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    if(!validations())
+        return;
+    props.setPropriedades(localProprieties);
     
   }
 
@@ -349,6 +386,32 @@ export function Sidebar(props: SidebarPropriedades) {
           ></input>
         </span>
       </span>
+      <span>
+        <label>Rotação</label>
+        <span>
+          <input
+            className="form-input"
+            onChange={onChangeProps}
+            name="rotacao X"
+            placeholder="X"
+            value={localProprieties.rotacao?.X}
+          ></input>
+          <input
+            className="form-input"
+            onChange={onChangeProps}
+            name="rotacao Y"
+            placeholder="Y"
+            value={localProprieties.rotacao?.Y}
+          ></input>
+          <input
+            className="form-input"
+            onChange={onChangeProps}
+            name="rotação Z"
+            placeholder="Z"
+            value={localProprieties.rotacao?.Z}
+          ></input>
+        </span>
+      </span>
         <span style={{
             display: "flex",
             justifyContent: "space-between",
@@ -379,18 +442,35 @@ export function Sidebar(props: SidebarPropriedades) {
               <input
                 className="form-input"
                 onChange={onChangeProps}
-                name="resolucaoCurva X"
+                name="resolucaoCurva"
+                placeholder="0"
+                value={localProprieties.resolucaoCurva}
+              ></input>
+              
+            </span>
+          </span>
+          <span style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}>
+          <label>Resolução da superfície</label>
+          <span>
+              <input
+                className="form-input"
+                onChange={onChangeProps}
+                name="resolucaoSuperficie X"
                 placeholder="X"
-                value={localProprieties.resolucaoCurva.X}
+                value={localProprieties.resolucaoSuperficie.X}
               ></input>
               <input
                 className="form-input"
                 onChange={onChangeProps}
-                name="resolucaoCurva Y"
+                name="resolucaoSuperficie Y"
                 placeholder="Y"
-                value={localProprieties.resolucaoCurva.Y}
+                value={localProprieties.resolucaoSuperficie.Y}
               ></input>
-            </span>
+          </span>
           </span>
           
       </span>
@@ -442,9 +522,9 @@ export function Sidebar(props: SidebarPropriedades) {
             
       
       </span>
-        
+      <button onClick={onClickAlterations} className="btn btn-aplicar">Aplicar Alterações</button>
       <button onClick={onClick} className="btn">
-        Aplicar alterações
+        Gerar Superficie
       </button>
 
       <button className="btn btn-info" onClick={onClickInfo}>&#9432;</button>

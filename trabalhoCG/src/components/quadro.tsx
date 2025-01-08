@@ -2,10 +2,6 @@ import { Sidebar, Propriedades } from "./sidebar"
 import { Canvas } from "../utils";
 import "../styles/quadroStyle.css"
 import { useEffect, useState } from "react"
-import { Ponto } from "../models/Ponto";
-import { Aresta } from "../models/Aresta";
-import { Poligono } from "../models/Poligono";
-
 
 
 export function Quadro() {
@@ -65,34 +61,13 @@ export function Quadro() {
         },
         escala: 1, // Valor padrão
         pontosDeControle:{X:4, Y:4},
-        grauCurva: 90,
-        resolucaoCurva: {X: 100, Y: 100}
+        grauCurva: 45,
+        resolucaoCurva: 5,
+        resolucaoSuperficie: {X: 4, Y: 4}
     
     });
 
-    const [arestas, setArestas] = useState<Aresta[]>([]);
-    const [poligonos, setPoligonos] = useState<Poligono[]>([]);
-    const [idArestas, setIdArestas] = useState(0);
-    const [idPoligonos, setIdPoligonos] = useState(0);
 
-    function onClickCanvas(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
-        
-    }
-
-    function fecharPoligono() {
-        
-    }
-
-    function limparPoligonos() {
-        if (canvas) {
-            canvas.clearCanvas();
-            setArestas([]);
-            setPoligonos([]);
-            setIdArestas(0);
-            setIdPoligonos(0);
-        }
-    }
-    
     
 
     return (
@@ -100,7 +75,6 @@ export function Quadro() {
             <div>
                 <h1> Modelagem de Superfície 3D (B-Splines)</h1>
                 <canvas id="tela" width={propriedades.tela.X} height={propriedades.tela.Y} style={{ border: "1px solid #000" }}
-                    onClick={onClickCanvas}
                 ></canvas>
             </div>
             <aside>
@@ -121,6 +95,7 @@ export function Quadro() {
                     canva={canvas}
                     grauCurva={propriedades.grauCurva}
                     resolucaoCurva={propriedades.resolucaoCurva}
+                    resolucaoSuperficie={propriedades.resolucaoSuperficie}
                 />
             </aside>
             
