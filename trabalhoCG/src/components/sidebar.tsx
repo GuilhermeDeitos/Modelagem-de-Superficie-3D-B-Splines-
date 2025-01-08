@@ -6,6 +6,9 @@ import {
   isValidRGB,
   isValidScreenSize,
   Canvas,
+  GeometricTransformations,
+  MatrixUtils,
+  randomizarSuperficie
 } from "../utils";
 import Swal from "sweetalert2";
 import "../styles/sidebar.css";

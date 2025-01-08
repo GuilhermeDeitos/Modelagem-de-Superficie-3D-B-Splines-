@@ -123,6 +123,11 @@ export class MatrixUtils {
 
         return result;
     }
+
+    //converter ponto para matriz
+    static pointToMatrix(point: Ponto): number[] {
+        return [point.X, point.Y, point.Z, 1];
+    }
 }
 
 export class GeometricTransformations{
@@ -315,3 +320,5 @@ export class Canvas{
         return this.ctx;
     }
 }
+
+
